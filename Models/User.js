@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -33,16 +33,19 @@ const userSchema = new mongoose.Schema({
 
 //mongoose hook that fire before saving in the database
 userSchema.pre("save", async function (next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  const salt = bcrypt.genSaltSync(10);
+  this.password = bcrypt.hashSync(this.password, salt);
   next();
 });
 //mongoose hook that fires before updating in database
 userSchema.pre("updateOne", async function (next) {
   var updatedPassword = this.getUpdate().$set.password;
   if (updatedPassword) {
-    const salt = await bcrypt.genSalt();
-    this.getUpdate().$set.password = await bcrypt.hash(updatedPassword, salt);
+    const salt = bcrypt.genSaltSync(10);
+    this.getUpdate().$set.password = await bcrypt.hashSync(
+      updatedPassword,
+      salt
+    );
   }
   next();
 });
@@ -53,7 +56,7 @@ userSchema.statics.login = async function (email, password) {
   console.log("user:", user);
   if (user !== null) {
     console.log("im herer");
-    const auth = await bcrypt.compare(password, user.password);
+    const auth = bcrypt.compareSync(password, user.password);
     console.log("auth", auth);
     if (auth) {
       console.log("auth here");
@@ -66,7 +69,7 @@ userSchema.statics.login = async function (email, password) {
 };
 
 userSchema.statics.check_current_Password = async function (newUser, oldUser) {
-  const auth = await bcrypt.compare(newUser.password, oldUser.password);
+  const auth = bcrypt.compareSync(newUser.password, oldUser.password);
   if (auth) {
     return newUser;
   }
