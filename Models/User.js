@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt-nodejs");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
   firstName: {
@@ -52,11 +52,14 @@ userSchema.statics.login = async function (email, password) {
   const user = await this.findOne({ email });
   console.log("user:", user);
   if (user !== null) {
+    console.log("im herer");
     const auth = await bcrypt.compare(password, user.password);
-
+    console.log("auth", auth);
     if (auth) {
+      console.log("auth here");
       return user;
     }
+    console.log("else");
     throw Error("password");
   }
   throw Error("email");
