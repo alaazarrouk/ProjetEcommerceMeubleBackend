@@ -2,7 +2,7 @@
   "name": "projet-e-commerce-backend",
   "version": "1.0.0",
   "engines": {
-    "node": "14.8.0"
+    "node": "12.8.0"
   },
   "main": "server",
   "scripts": {
